@@ -3,6 +3,7 @@ package org.homework.domain;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TodoRepository {
@@ -25,7 +26,7 @@ public class TodoRepository {
     // 1 또는 마지막 id + 1
     if (size != 0) {
 
-      int last_id = Integer.parseInt(list.get(list.size() - 1).getId());
+      int last_id = Integer.parseInt(list.get(size - 1).getId());
 
       id = Integer.toString(last_id + 1);
     }
@@ -54,7 +55,7 @@ public class TodoRepository {
       return true;
     } else if (todo.getDue_dateString().equals(word)) { // 마감일로 검색
       return true;
-    } else if (!todo.isDone() && "[미완료]".contains(word)) { // 미완료 여부로 검색
+    } else if (!word.equals("완료") && !todo.isDone() && "[미완료]".contains(word)) { // 미완료 여부로 검색
       return true;
     } else if (todo.isDone() && "[완료]".contains(word)) { // 완료 여부로 검색
       return true;
@@ -73,23 +74,31 @@ public class TodoRepository {
   }
 
   public List<Todo> getSearchList(String word) {
-    return list.stream().filter(Todo -> predicate(Todo, word)).collect(Collectors.toList());
+    return list.stream()
+                  .filter(Todo -> predicate(Todo, word))
+                    .collect(Collectors.toList());
   }
 
 
   public int delete(String id) {
     int total = list.size();
-    this.list = (ArrayList<Todo>) list.stream().filter(Todo -> !predicate2(Todo, id)).collect(Collectors.toList());
+    this.list = (ArrayList<Todo>) list.stream()
+                                        .filter(Todo -> !predicate2(Todo, id))
+                                          .collect(Collectors.toList());
+
     return total - list.size();
   }
 
   public void todoDone(String id) {
-    this.list = (ArrayList<Todo>) list.stream().map(Todo -> {
-      if (Todo.getId().equals(id)) {
-        Todo.setDone(true);
-      }
-      return Todo;
-    }).sorted(this::sortTodo).collect(Collectors.toList());
+    this.list = (ArrayList<Todo>) list.stream()
+                                        .map(Todo -> {
+                                                            if (Todo.getId().equals(id)) {
+                                                              Todo.setDone(true);
+                                                            }
+                                                            return Todo;
+                                                           }
+                                        ).sorted(this::sortTodo)
+                                            .collect(Collectors.toList());
   }
 
   // 안 쓰일 지도
@@ -102,13 +111,13 @@ public class TodoRepository {
     this.list.sort(this::sortTodo);
   }
 
-  public Todo getTodoById(String id) {
-    List<Todo> result = this.list.stream().filter(Todo -> predicate2(Todo, id)).collect(Collectors.toList());
-    if (!result.isEmpty()) {
-      return result.get(0);
-    } else {
-      return null;
-    }
+  public Optional<Todo> getTodoById(String id) {
+    List<Todo> result = this.list
+                              .stream()
+                                .filter(Todo -> predicate2(Todo, id))
+                                  .collect(Collectors.toList());
+
+    return Optional.ofNullable(result.get(0));
   }
 }
 

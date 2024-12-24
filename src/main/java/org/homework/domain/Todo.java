@@ -13,8 +13,6 @@ public class Todo {
   private LocalDate reg_date;       // 등록일
   private LocalDate due_date;       // 마감일
 
-  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-  // 등록일과 마감일 String 으로 변환할 DateTimeFormatter 2024-12-12
 
   public Todo() {
   }
@@ -49,11 +47,13 @@ public class Todo {
 
   // 등록일 문자열로 반환
   public String getReg_dateString() {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     return reg_date.format(formatter);
   }
 
   // 마감일 문자열로 반환
   public String getDue_dateString() {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     return due_date.format(formatter);
   }
 
@@ -75,5 +75,16 @@ public class Todo {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public String toString() {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    return "id : " + id + "\n"
+        + "할 일 이름 : " + name + "\n"
+        + "할 일의 내용 : " + description + "\n"
+        + "완료 여부 : " + (done ? "[완료]" : "[미완료]") + "\n"
+        + "생성일 : " + reg_date.format(formatter) + "\n"
+        + "마감일 : " + due_date.format(formatter);
   }
 }
