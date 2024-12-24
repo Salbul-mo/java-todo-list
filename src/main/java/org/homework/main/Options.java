@@ -15,13 +15,4 @@ public enum Options {
     return name;
   }
 
-  public static Options nameOf(String name) {
-    for (Options o : Options.values()) {
-      if(o.getName().equals(name)) {
-        return o;
-      }
-    }
-    return null;
-  }
-
 }
