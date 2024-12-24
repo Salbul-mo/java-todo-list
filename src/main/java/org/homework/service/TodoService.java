@@ -5,6 +5,7 @@ import org.homework.domain.TodoRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public class TodoService {
 
@@ -38,8 +39,8 @@ public class TodoService {
   }
 
   public boolean todoDone(String id) {
-    Todo todo = dao.getTodoById(id);
-    if (todo == null) {
+    Optional<Todo> todo = dao.getTodoById(id);
+    if (todo.isEmpty()) {
       return false;
     } else {
       dao.todoDone(id);
@@ -47,24 +48,13 @@ public class TodoService {
     }
   }
 
-  public Todo editTodo(String[] input, LocalDate new_due, Todo edit) {
-
-    if(!input[0].trim().isEmpty()) {
-      edit.setName(input[0]);
-    }
-
-    if(!input[1].trim().isEmpty()) {
-      edit.setDescription(input[1]);
-    }
-
-    if(!input[2].trim().isEmpty() && new_due != null) {
-      edit.setDue_date(new_due);
-    }
-
+  public Todo editTodo(Todo edit) {
+    // 레포지토리에서 검색하여 가져온 Todo 의 인스턴스에 대한 참조가 계속 유지되어 inputView 에서 Todo의 정보를 수정하면
+    // TodoRepository 의 정보도 바뀌어서 service 나 Repository 에서 추가 작업을 할 필요가 없어 일단 추가 작업 없이 놔둔 상태
     return edit;
   }
 
-  public Todo getTodoById(String id) {
+  public Optional<Todo> getTodoById(String id) {
     return dao.getTodoById(id);
   }
 }
