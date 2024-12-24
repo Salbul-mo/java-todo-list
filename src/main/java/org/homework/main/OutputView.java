@@ -2,18 +2,25 @@ package org.homework.main;
 
 import org.homework.domain.Todo;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.List;
+import java.util.Optional;
 
+/*
+  컨트롤러로부터 넘겨 받은 데이터를 가지고 결과 출력
+ */
 public class OutputView {
 
+  private BufferedReader br;
   private BufferedWriter bw;
 
-  public OutputView(OutputStream out) {
-    this.bw = new BufferedWriter(new OutputStreamWriter(out));
+  public OutputView(BufferedReader br, BufferedWriter bw) {
+    this.br = br;
+    this.bw = bw;
+  }
+
+  public String input() throws IOException {
+    return br.readLine();
   }
 
   public void print(String output) throws IOException {
@@ -45,35 +52,72 @@ public class OutputView {
 
   public void printMenu() throws IOException {
     String[] menu = {"1.추가", "2.검색", "3.수정", "4.전체 조회", "5.삭제", "6.완료", "7.종료"};
-    bw.write("=========메뉴를 선택하세요=========\n");
+    print("=========메뉴를 선택하세요=========");
     for (String m : menu) {
       bw.write(m + "\n");
     }
-    bw.write("===============================\n");
-    bw.flush();
+    print("===============================");
   }
 
   public void printExit() throws IOException {
-    bw.write("프로그램을 종료합니다.");
-    bw.flush();
-  }
-
-
-  public void printTodo(Todo todo) throws IOException {
-    bw.write("id : " + todo.getId() + "\n"
-            + "할 일 이름 : " + todo.getName() + "\n"
-            + "할 일의 내용 : "+ todo.getDescription() +"\n"
-            + "완료 여부 : " + (todo.isDone() ? "[완료]" : "[미완료]") + "\n"
-            + "생성일 : " + todo.getReg_dateString() + "\n"
-            + "마감일 : " + todo.getDue_dateString() + "\n" );
-
-    bw.flush();
+    print("프로그램을 종료합니다.");
   }
 
   public void printList(List<Todo> list) throws IOException {
     for (Todo todo : list) {
-      printTodo(todo);
-      bw.write("==============================\n");
+      print(todo.toString());
+      print("==============================");
+    }
+  }
+
+    public void printEditTodo(Optional<Todo> opt) throws IOException {
+      if (opt.isPresent()) {
+        print("==========수정된 할일==========");
+        print(opt.get()
+                  .toString());
+      } else {
+        print("==========수정에 실패했습니다.==========");
+      }
+    }
+
+  public void printAddResult(Todo todo) throws IOException {
+    print("정상 등록되었습니다.");
+
+    print(todo.toString()); // 등록한 할 일 정보 출력
+
+  }
+
+  public void printSearch(List<Todo> list) throws IOException {
+    if (list.size() > 0) {
+      printList(list);
+    } else {
+      print("검색 결과가 존재하지 않습니다.");
+    }
+  }
+
+  public void printAll(List<Todo> list) throws IOException {
+    print("==========할 일 전체 출력==========");
+
+    if (list.isEmpty()) {
+      print("입력된 할 일이 없습니다.");
+    } else {
+      printList(list);
+    }
+  }
+
+  public void printDeleteResult(boolean deleteSuccess) throws IOException {
+    if (deleteSuccess) {
+      print("삭제에 성공했습니다.");
+    } else {
+      print("삭제에 실패했습니다.");
+    }
+  }
+
+  public void printDoneResult(boolean doneSuccess) throws IOException {
+    if (!doneSuccess) {
+      print("완료 처리 실패");
+    } else {
+      print("완료 처리 성공");
     }
   }
 }
